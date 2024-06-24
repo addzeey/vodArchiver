@@ -3,15 +3,23 @@ version: '3.8'
 services:
   stream_recorder:
     container_name: Vod_Archiver
+    deploy:
+      resources:
+        limits:
+          cpus: '0.70'
+
     build: .
     environment:
       STREAMER_NAME: ${STREAMER_NAME}
       SUPABASE_URL: ${SUPABASE_URL}
       SUPABASE_API_KEY: ${SUPABASE_API_KEY}
+      BUNNY_STREAM_LIBRARY_ID: ${BUNNY_STREAM_LIBRARY_ID}
+      BUNNY_STREAM_API_KEY: ${BUNNY_STREAM_API_KEY}
+      TWITCH_CLIENT_ID: ${TWITCH_CLIENT_ID}
       AZURE_ACCOUNT_NAME: ${AZURE_ACCOUNT_NAME}
       AZURE_ACCOUNT_KEY: ${AZURE_ACCOUNT_KEY}
       AZURE_CONTAINER_NAME: ${AZURE_CONTAINER_NAME}
-      TWITCH_CLIENT_ID: ${TWITCH_CLIENT_ID}
       TWITCH_OAUTH_TOKEN: ${TWITCH_OAUTH_TOKEN}
+      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL}
     volumes:
       - ./output:/output
