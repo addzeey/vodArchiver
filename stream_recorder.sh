@@ -51,7 +51,7 @@ INFO_URL="https://tapi.livestream.tools/info/$STREAMER_NAME"
 RCLONE_CONFIG_PATH="/root/.config/rclone/rclone.conf"
 if [ ! -f "$RCLONE_CONFIG_PATH" ]; then
   mkdir -p /root/.config/rclone
-  cat <<EOF >"$RCLONE_CONFIG_PATH"
+  cat <<EOF > "$RCLONE_CONFIG_PATH"
 [azure]
 type = azureblob
 account = $AZURE_ACCOUNT_NAME
@@ -81,7 +81,7 @@ while true; do
   if STREAM_DATA=$(check_stream_live); then
     FETCHED_TITLE=$(echo $STREAM_DATA | cut -d '|' -f 1)
     FETCHED_GAME=$(echo $STREAM_DATA | cut -d '|' -f 2)
-    UNIQUE_ID=$(date +%s%N) # Generate a unique ID based on current timestamp
+    UNIQUE_ID=$(date +%s%N)  # Generate a unique ID based on current timestamp
     MP4_FILENAME="stream_${UNIQUE_ID}.mp4"
     TIME_DATE=$(date +%Y-%m-%dT%H:%M:%S)
 
@@ -91,11 +91,11 @@ while true; do
 
     # Record and encode the stream on-the-fly
     if ! streamlink --twitch-api-header "Authorization=OAuth $TWITCH_OAUTH_TOKEN" \
-      --twitch-disable-reruns \
-      --twitch-disable-hosting \
-      --twitch-disable-ads \
-      "https://www.twitch.tv/$STREAMER_NAME" best --stdout |
-      ffmpeg -i pipe:0 -c:v libx264 -preset veryfast -crf 23 -c:a aac -b:a 128k -f mp4 "$SCRIPT_DIR/$MP4_FILENAME" -hide_banner -loglevel error >/dev/null 2>&1; then
+        --twitch-disable-reruns \
+        --twitch-disable-hosting \
+        --twitch-disable-ads \
+        "https://www.twitch.tv/$STREAMER_NAME" best --stdout | \
+    ffmpeg -i pipe:0 -c:v libx264 -preset medium -crf 23 -c:a aac -b:a 128k -f mp4 "$SCRIPT_DIR/$MP4_FILENAME" -hide_banner -loglevel error >/dev/null 2>&1; then
       echo "Failed to record and encode the stream."
     fi
 
