@@ -1,7 +1,9 @@
 #!/bin/bash
+
 TIME_DATE=$(date +%d-%m-%y)
 TIME_CLOCK=$(date +%H_%M_%S)
 CC=$(date +%H:%M:%S)'|'
+
 # Check if necessary environment variables are set
 if [ -z "$STREAMER_NAME" ]; then
   echo "Error: STREAMER_NAME is not set."
@@ -94,6 +96,8 @@ while true; do
         --twitch-disable-reruns \
         --twitch-disable-hosting \
         --twitch-disable-ads \
+        --retry-max 10 --retry-streams 3 \
+        --hls-segment-threads 5 --hls-segment-attempts 5 \
         "https://www.twitch.tv/$STREAMER_NAME" best --stdout | \
     ffmpeg -i pipe:0 -c:v libx264 -preset medium -crf 23 -c:a aac -b:a 128k -f mp4 "$SCRIPT_DIR/$MP4_FILENAME" -hide_banner -loglevel error >/dev/null 2>&1; then
       echo "Failed to record and encode the stream."
@@ -121,8 +125,13 @@ while true; do
                 \"game\": \"$FETCHED_GAME\"
               }"
 
-        # Remove the encoded file after upload
-        rm -f "$SCRIPT_DIR/$MP4_FILENAME"
+        # Check if KEEP_TEMP_FILE is set to keep the file, otherwise remove it
+        if [ "$KEEP_TEMP_FILE" != "true" ]; then
+          echo "Removing temporary file $MP4_FILENAME"
+          rm -f "$SCRIPT_DIR/$MP4_FILENAME"
+        else
+          echo "Keeping temporary file $MP4_FILENAME"
+        fi
       else
         echo "Failed to upload the file to Azure Blob Storage."
       fi
