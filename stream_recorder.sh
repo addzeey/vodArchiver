@@ -97,7 +97,7 @@ while true; do
         --twitch-disable-hosting \
         --twitch-disable-ads \
         --retry-max 10 --retry-streams 3 \
-        --hls-segment-threads 5 --hls-segment-attempts 5 \
+        --stream-segment-threads 5 --stream-segment-attempts 5 \
         "https://www.twitch.tv/$STREAMER_NAME" best --stdout | \
     ffmpeg -i pipe:0 -c:v libx264 -preset medium -crf 23 -c:a aac -b:a 128k -f mp4 "$SCRIPT_DIR/$MP4_FILENAME" -hide_banner -loglevel error >/dev/null 2>&1; then
       echo "Failed to record and encode the stream."
